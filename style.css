@@ -100,3 +100,8 @@ body {
 .indicator.active {
   background-color: tomato;
 }
+
+.control-pause > span {
+  position: absolute;
+  opacity: 0;
+}

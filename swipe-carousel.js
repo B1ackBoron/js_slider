@@ -1,31 +1,33 @@
-/* eslint-disable prefer-rest-params */
-/* eslint-disable no-undef */
-function SwipeCarousel() {
-  Carousel.apply(this, arguments);
-  this.slidesContainer = this.container.querySelector('.slides');
+import Carousel from './carousel.js';
+
+class SwipeCarousel extends Carousel {
+  constructor(...args) {
+    super(...args);
+    this.slidesContainer = this.slideItems[0].parentElement;
+  }
+
+  _initListeners() {
+    super._initListeners();
+    this.slidesContainer.addEventListener('touchstart', this.swipeStart.bind(this));
+    this.slidesContainer.addEventListener('mousedown', this.swipeStart.bind(this));
+    this.slidesContainer.addEventListener('touchend', this.swipeEnd.bind(this));
+    this.slidesContainer.addEventListener('mouseup', this.swipeEnd.bind(this));
+  }
+
+  swipeStart(e) {
+    this.startPosX = e instanceof MouseEvent
+      ? e.pageX
+      : e.changedTouches[0].pageX;
+  }
+
+  swipeEnd(e) {
+    this.endPosX = e instanceof MouseEvent
+      ? e.pageX
+      : e.changedTouches[0].pageX;
+
+    if (this.endPosX - this.startPosX > 100) this.prev();
+    if (this.endPosX - this.startPosX < -100) this.next();
+  }
 }
 
-SwipeCarousel.prototype = Object.create(Carousel.prototype);
-SwipeCarousel.prototype.constructor = SwipeCarousel;
-
-SwipeCarousel.prototype._initListeners = function (e) {
-  Carousel.prototype._initListeners.apply(this);
-  this.slidesContainer.addEventListener('touchstart', this.swipeStart.bind(this));
-  this.slidesContainer.addEventListener('mousedown', this.swipeStart.bind(this));
-  this.slidesContainer.addEventListener('touchend', this.swipeEnd.bind(this));
-  this.slidesContainer.addEventListener('mouseup', this.swipeEnd.bind(this));
-};
-SwipeCarousel.prototype.swipeStart = function (e) {
-  this.startPosX = e instanceof MouseEvent
-    ? e.pageX
-    : e.changedTouches[0].pageX;
-};
-
-SwipeCarousel.prototype.swipeEnd = function (e) {
-  this.endPosX = e instanceof MouseEvent
-    ? e.pageX
-    : e.changedTouches[0].pageX;
-
-  if (this.endPosX - this.startPosX > 100) this.prev();
-  if (this.endPosX - this.startPosX < -100) this.next();
-};
+export default SwipeCarousel;
